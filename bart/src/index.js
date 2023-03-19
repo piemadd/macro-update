@@ -76,19 +76,14 @@ export default {
 						arr: stop.arrival.time,
 						dep: stop.departure.time,
 						delay: stop.departure.delay,
-						untilArrival: {
-							hours: Math.floor(stop.arrival.time / 3600),
-							minutes: Math.floor((stop.arrival.time % 3600) / 60),
-							seconds: Math.floor(stop.arrival.time % 60),
-						}
+						untilArrival: Math.floor((new Date().valueOf() - (stop.departure.time.low * 1000))/1000),
 					}
 				}),
 			}
 
 			vehicles[entity.tripUpdate.trip.tripId].stops.forEach((stop) => {
-				const stationIDActual = stop.stopID.split('_')[1];
-				if (stations[stationIDActual]) {
-					stations[stationIDActual].upcomingTrains.push({
+				if (stations[stop.stopID]) {
+					stations[stop.stopID].upcomingTrains.push({
 						routeID: vehicles[entity.tripUpdate.trip.tripId].routeID,
 						tripID: vehicles[entity.tripUpdate.trip.tripId].tripID,
 						routeShortName: vehicles[entity.tripUpdate.trip.tripId].routeShortName,
@@ -119,7 +114,7 @@ export default {
 			parentStations[station.parent].upcomingTrains = parentStations[station.parent].upcomingTrains.concat(station.upcomingTrains);
 		})
 
-		//env.TOKEN
+		//console.log(parentStations)
 
 		fetch(`https://macro.railstat.us/api/update?path=v1/bart`, {
 			method: 'POST',
